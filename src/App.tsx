@@ -3,7 +3,18 @@ import { getCurrentWindow, availableMonitors, primaryMonitor } from "@tauri-apps
 import { PhysicalPosition, PhysicalSize } from "@tauri-apps/api/dpi";
 import type { UnlistenFn } from "@tauri-apps/api/event";
 import { loadWindowState, saveWindowState } from "./lib/api";
+import type { Task } from "./lib/types";
+import TaskList from "./components/TaskList";
+import AddTaskInput from "./components/AddTaskInput";
 import "./styles.css";
+
+const SAMPLE_TASKS: Task[] = [
+  { id: "1", text: "Buy groceries", done: false, createdAt: 1715900000000, order: 0 },
+  { id: "2", text: "Review pull request", done: true, createdAt: 1715890000000, order: 1 },
+  { id: "3", text: "Draft the quarterly report and send it to the team for review before Friday's deadline — include updated revenue charts", done: false, createdAt: 1715880000000, order: 2 },
+  { id: "4", text: "Walk the dog", done: false, createdAt: 1715870000000, order: 3 },
+  { id: "5", text: "Fix login page bug", done: true, createdAt: 1715860000000, order: 4 },
+];
 
 function App() {
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -104,7 +115,10 @@ function App() {
       <div className="drag-strip" data-tauri-drag-region />
       <div className="content">
         <div className="scrim" />
-        <div className="content-inner">Phase 1 shell</div>
+        <div className="content-inner">
+          <TaskList tasks={SAMPLE_TASKS} />
+          <AddTaskInput />
+        </div>
       </div>
     </div>
   );
