@@ -8,6 +8,8 @@
     "opener:default",
     "allow-load-window-state",
     "allow-save-window-state",
+    "allow-load-settings",
+    "allow-save-settings",
     "core:window:allow-set-position",
     "core:window:allow-set-size",
     "core:window:allow-outer-position",
