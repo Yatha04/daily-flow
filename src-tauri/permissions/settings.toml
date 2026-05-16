@@ -1,0 +1,9 @@
+[[permission]]
+identifier = "allow-load-settings"
+description = "Allows the load_settings command."
+commands.allow = ["load_settings"]
+
+[[permission]]
+identifier = "allow-save-settings"
+description = "Allows the save_settings command."
+commands.allow = ["save_settings"]

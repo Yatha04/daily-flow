@@ -1,23 +1,20 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getCurrentWindow, availableMonitors, primaryMonitor } from "@tauri-apps/api/window";
 import { PhysicalPosition, PhysicalSize } from "@tauri-apps/api/dpi";
 import type { UnlistenFn } from "@tauri-apps/api/event";
-import { loadWindowState, saveWindowState } from "./lib/api";
-import type { Task } from "./lib/types";
-import TaskList from "./components/TaskList";
-import AddTaskInput from "./components/AddTaskInput";
+import { loadWindowState, saveWindowState, loadSettings, saveSettings } from "./lib/api";
+import type { TabId } from "./lib/types";
+import TabBar from "./components/TabBar";
+import Stopwatch from "./components/Stopwatch";
+import TodoView from "./components/TodoView";
+import NotesView from "./components/NotesView";
 import "./styles.css";
-
-const SAMPLE_TASKS: Task[] = [
-  { id: "1", text: "Buy groceries", done: false, createdAt: 1715900000000, order: 0 },
-  { id: "2", text: "Review pull request", done: true, createdAt: 1715890000000, order: 1 },
-  { id: "3", text: "Draft the quarterly report and send it to the team for review before Friday's deadline — include updated revenue charts", done: false, createdAt: 1715880000000, order: 2 },
-  { id: "4", text: "Walk the dog", done: false, createdAt: 1715870000000, order: 3 },
-  { id: "5", text: "Fix login page bug", done: true, createdAt: 1715860000000, order: 4 },
-];
 
 function App() {
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const settingsDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [activeTab, setActiveTab] = useState<TabId>("todos");
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
 
   useEffect(() => {
     const win = getCurrentWindow();
@@ -110,14 +107,56 @@ function App() {
     };
   }, []);
 
+  // Load settings on mount.
+  useEffect(() => {
+    let cancelled = false;
+    loadSettings()
+      .then((s) => {
+        if (cancelled) return;
+        if (s?.activeTab === "todos" || s?.activeTab === "notes") {
+          setActiveTab(s.activeTab);
+        }
+      })
+      .catch((e) => console.error("loadSettings failed:", e))
+      .finally(() => {
+        if (!cancelled) setSettingsLoaded(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Persist activeTab (debounced) once initial load is done.
+  useEffect(() => {
+    if (!settingsLoaded) return;
+    if (settingsDebounce.current !== null) clearTimeout(settingsDebounce.current);
+    settingsDebounce.current = setTimeout(() => {
+      settingsDebounce.current = null;
+      saveSettings({ activeTab }).catch((e) =>
+        console.error("saveSettings failed:", e),
+      );
+    }, 300);
+    return () => {
+      if (settingsDebounce.current !== null) {
+        clearTimeout(settingsDebounce.current);
+        settingsDebounce.current = null;
+      }
+    };
+  }, [activeTab, settingsLoaded]);
+
   return (
     <div className="panel">
       <div className="drag-strip" data-tauri-drag-region />
       <div className="content">
         <div className="scrim" />
         <div className="content-inner">
-          <TaskList tasks={SAMPLE_TASKS} />
-          <AddTaskInput />
+          <div className="top-bar">
+            <TabBar active={activeTab} onChange={setActiveTab} />
+            <Stopwatch />
+          </div>
+          <div className="view-slot">
+            {activeTab === "todos" ? <TodoView /> : <NotesView />}
+          </div>
         </div>
       </div>
     </div>

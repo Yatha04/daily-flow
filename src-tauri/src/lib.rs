@@ -26,6 +26,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             storage::load_window_state,
             storage::save_window_state,
+            storage::load_settings,
+            storage::save_settings,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application")
