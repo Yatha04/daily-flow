@@ -12,9 +12,16 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "notebook",
-        "width": 800,
-        "height": 600
+        "width": 320,
+        "height": 420,
+        "transparent": true,
+        "decorations": false,
+        "skipTaskbar": true,
+        "resizable": true,
+        "alwaysOnTop": false,
+        "shadow": false
       }
     ],
     "security": {
