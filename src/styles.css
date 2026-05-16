@@ -85,17 +85,74 @@ html, body, #root {
 
 /* ── Task row ── */
 .task-row {
+  position: relative;
   display: flex;
   align-items: flex-start;
   gap: 10px;
   padding: 7px 6px;
   border-radius: 6px;
-  transition: background 120ms ease;
+  transition: background 120ms ease, opacity 120ms ease;
   user-select: none;
 }
 
 .task-row:hover {
   background: rgba(255, 255, 255, 0.06);
+}
+
+.task-dragging {
+  opacity: 0.4;
+}
+
+/* ── Drag handle (hover-only chrome) ── */
+.task-handle {
+  flex: 0 0 12px;
+  width: 12px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: -2px;
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 120ms ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.task-row:hover .task-handle {
+  opacity: 0.7;
+}
+
+.task-handle:hover {
+  opacity: 1;
+}
+
+.task-handle:active {
+  cursor: grabbing;
+}
+
+/* ── Drop indicator ── */
+.task-row.drop-above::before,
+.task-row.drop-below::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  height: 2px;
+  background: rgba(120, 180, 255, 0.9);
+  border-radius: 1px;
+  pointer-events: none;
+  box-shadow: 0 0 4px rgba(120, 180, 255, 0.6);
+}
+
+.task-row.drop-above::before {
+  top: -1px;
+}
+
+.task-row.drop-below::after {
+  bottom: -1px;
 }
 
 /* ── Checkbox ── */
