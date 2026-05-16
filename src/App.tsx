@@ -1,50 +1,112 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
-import "./App.css";
+import { useEffect, useRef } from "react";
+import { getCurrentWindow, availableMonitors, primaryMonitor } from "@tauri-apps/api/window";
+import { PhysicalPosition, PhysicalSize } from "@tauri-apps/api/dpi";
+import type { UnlistenFn } from "@tauri-apps/api/event";
+import { loadWindowState, saveWindowState } from "./lib/api";
+import "./styles.css";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
+  useEffect(() => {
+    const win = getCurrentWindow();
+    let cancelled = false;
+    const unlisteners: UnlistenFn[] = [];
+
+    function scheduleDebounce() {
+      if (debounceTimer.current !== null) {
+        clearTimeout(debounceTimer.current);
+      }
+      debounceTimer.current = setTimeout(async () => {
+        debounceTimer.current = null;
+        if (cancelled) return;
+        try {
+          const [pos, size] = await Promise.all([
+            win.outerPosition(),
+            win.outerSize(),
+          ]);
+          if (cancelled) return;
+          await saveWindowState({
+            x: pos.x,
+            y: pos.y,
+            width: size.width,
+            height: size.height,
+          });
+        } catch (err) {
+          console.error("saveWindowState failed:", err);
+        }
+      }, 300);
+    }
+
+    async function init() {
+      const saved = await loadWindowState();
+      if (cancelled) return;
+      if (saved !== null) {
+        const monitors = await availableMonitors();
+        if (cancelled) return;
+
+        const centerX = saved.x + saved.width / 2;
+        const centerY = saved.y + saved.height / 2;
+
+        const isVisible = monitors.some((m) => {
+          const wa = m.workArea;
+          return (
+            centerX >= wa.position.x &&
+            centerX < wa.position.x + wa.size.width &&
+            centerY >= wa.position.y &&
+            centerY < wa.position.y + wa.size.height
+          );
+        });
+
+        let targetX = saved.x;
+        let targetY = saved.y;
+
+        if (!isVisible) {
+          const primary = (await primaryMonitor()) ?? monitors[0] ?? null;
+          if (cancelled) return;
+          if (primary) {
+            const wa = primary.workArea;
+            targetX = wa.position.x + Math.floor((wa.size.width - saved.width) / 2);
+            targetY = wa.position.y + Math.floor((wa.size.height - saved.height) / 2);
+          }
+        }
+
+        await win.setSize(new PhysicalSize(saved.width, saved.height));
+        if (cancelled) return;
+        await win.setPosition(new PhysicalPosition(targetX, targetY));
+        if (cancelled) return;
+      }
+
+      const u1 = await win.onMoved(scheduleDebounce);
+      if (cancelled) { u1(); return; }
+      unlisteners.push(u1);
+
+      const u2 = await win.onResized(scheduleDebounce);
+      if (cancelled) { u2(); return; }
+      unlisteners.push(u2);
+    }
+
+    init().catch((err) => console.error("App init failed:", err));
+
+    return () => {
+      cancelled = true;
+      if (debounceTimer.current !== null) {
+        clearTimeout(debounceTimer.current);
+        debounceTimer.current = null;
+      }
+      for (const u of unlisteners) u();
+      unlisteners.length = 0;
+    };
+  }, []);
 
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
-
-      <div className="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="panel">
+      <div className="drag-strip" data-tauri-drag-region />
+      <div className="content">
+        <div className="scrim" />
+        <div className="content-inner">Phase 1 shell</div>
       </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
-    </main>
+    </div>
   );
 }
 

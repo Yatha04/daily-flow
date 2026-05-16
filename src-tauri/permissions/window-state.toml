@@ -1,0 +1,9 @@
+[[permission]]
+identifier = "allow-load-window-state"
+description = "Allows the load_window_state command."
+commands.allow = ["load_window_state"]
+
+[[permission]]
+identifier = "allow-save-window-state"
+description = "Allows the save_window_state command."
+commands.allow = ["save_window_state"]
