@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import type { WindowState, Settings } from "./types";
+import type { WindowState, Settings, Task, RolloverResult } from "./types";
 
 export async function loadWindowState(): Promise<WindowState | null> {
   return await invoke<WindowState | null>("load_window_state");
@@ -15,4 +15,16 @@ export async function loadSettings(): Promise<Settings | null> {
 
 export async function saveSettings(settings: Settings): Promise<void> {
   await invoke("save_settings", { settings });
+}
+
+export async function loadTasks(): Promise<Task[]> {
+  return await invoke<Task[]>("load_tasks");
+}
+
+export async function saveTasks(tasks: Task[]): Promise<void> {
+  await invoke("save_tasks", { tasks });
+}
+
+export async function rolloverTasks(today: string): Promise<RolloverResult> {
+  return await invoke<RolloverResult>("rollover_tasks", { today });
 }
