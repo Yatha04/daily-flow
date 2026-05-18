@@ -15,6 +15,7 @@
     "allow-rollover-tasks",
     "allow-load-notes",
     "allow-save-notes",
+    "allow-set-pin-mode",
     "core:window:allow-set-position",
     "core:window:allow-set-size",
     "core:window:allow-outer-position",

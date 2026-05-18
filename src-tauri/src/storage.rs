@@ -66,6 +66,10 @@ pub struct Settings {
     pub active_tab: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_seen_date: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pinned: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opacity: Option<f64>,
 }
 
 fn settings_path(app: &AppHandle) -> Result<PathBuf, String> {
@@ -268,10 +272,12 @@ pub async fn rollover_tasks(app: AppHandle, today: String) -> Result<RolloverRes
     }
     write_tasks_atomic(&app, &undone)?;
 
-    // 3. Update settings.lastSeenDate (merge: preserve activeTab).
+    // 3. Update settings.lastSeenDate (merge: preserve all other fields).
     let updated = Settings {
         active_tab: existing_settings.active_tab,
         last_seen_date: Some(today),
+        pinned: existing_settings.pinned,
+        opacity: existing_settings.opacity,
     };
     write_settings_atomic(&app, &updated)?;
 
@@ -323,6 +329,8 @@ pub async fn save_settings(app: AppHandle, settings: Settings) -> Result<(), Str
             _ => None,
         }),
         last_seen_date: settings.last_seen_date,
+        pinned: settings.pinned,
+        opacity: settings.opacity,
     };
 
     let path = settings_path(&app)?;
@@ -342,6 +350,8 @@ pub async fn save_settings(app: AppHandle, settings: Settings) -> Result<(), Str
     let merged = Settings {
         active_tab: incoming.active_tab.or(existing.active_tab),
         last_seen_date: incoming.last_seen_date.or(existing.last_seen_date),
+        pinned: incoming.pinned.or(existing.pinned),
+        opacity: incoming.opacity.or(existing.opacity),
     };
 
     if let Some(parent) = path.parent() {

@@ -11,10 +11,12 @@ import {
   loadTasks,
   saveTasks,
   rolloverTasks,
+  setPinMode,
 } from "./lib/api";
 import type { TabId, Task } from "./lib/types";
 import TabBar from "./components/TabBar";
 import Stopwatch from "./components/Stopwatch";
+import SettingsPanel from "./components/SettingsPanel";
 import TodoView from "./components/TodoView";
 import NotesView from "./components/NotesView";
 import "./styles.css";
@@ -33,6 +35,9 @@ function App() {
   const tasksDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>("todos");
   const [settingsLoaded, setSettingsLoaded] = useState(false);
+  const [opacity, setOpacity] = useState<number>(0.55);
+  const [pinned, setPinned] = useState<boolean>(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [tasksLoaded, setTasksLoaded] = useState(false);
 
@@ -136,6 +141,12 @@ function App() {
         if (s?.activeTab === "todos" || s?.activeTab === "notes") {
           setActiveTab(s.activeTab);
         }
+        if (typeof s?.opacity === "number") setOpacity(s.opacity);
+        if (typeof s?.pinned === "boolean") setPinned(s.pinned);
+        const restoredPinned = typeof s?.pinned === "boolean" ? s.pinned : false;
+        setPinMode(restoredPinned).catch((e) =>
+          console.error("setPinMode (restore) failed:", e),
+        );
       })
       .catch((e) => console.error("loadSettings failed:", e))
       .finally(() => {
@@ -146,13 +157,13 @@ function App() {
     };
   }, []);
 
-  // Persist activeTab (debounced) once initial load is done.
+  // Persist settings (debounced) once initial load is done.
   useEffect(() => {
     if (!settingsLoaded) return;
     if (settingsDebounce.current !== null) clearTimeout(settingsDebounce.current);
     settingsDebounce.current = setTimeout(() => {
       settingsDebounce.current = null;
-      saveSettings({ activeTab }).catch((e) =>
+      saveSettings({ activeTab, opacity, pinned }).catch((e) =>
         console.error("saveSettings failed:", e),
       );
     }, 300);
@@ -162,7 +173,13 @@ function App() {
         settingsDebounce.current = null;
       }
     };
-  }, [activeTab, settingsLoaded]);
+  }, [activeTab, opacity, pinned, settingsLoaded]);
+
+  // Sync pin state to Rust whenever it changes after load.
+  useEffect(() => {
+    if (!settingsLoaded) return;
+    setPinMode(pinned).catch((e) => console.error("setPinMode failed:", e));
+  }, [pinned, settingsLoaded]);
 
   // Rollover + load tasks on mount and on window focus.
   useEffect(() => {
@@ -272,7 +289,10 @@ function App() {
   }, []);
 
   return (
-    <div className="panel">
+    <div
+      className="panel"
+      style={{ "--panel-opacity": opacity } as React.CSSProperties}
+    >
       <div className="drag-strip" data-tauri-drag-region />
       <div className="content">
         <div className="scrim" />
@@ -280,7 +300,22 @@ function App() {
           <div className="top-bar">
             <TabBar active={activeTab} onChange={setActiveTab} />
             <Stopwatch />
+            <button
+              type="button"
+              className="settings-gear-btn"
+              onClick={() => setSettingsOpen((o) => !o)}
+              aria-label="Toggle settings"
+            >
+              ⚙
+            </button>
           </div>
+          <SettingsPanel
+            open={settingsOpen}
+            opacity={opacity}
+            onOpacityChange={setOpacity}
+            pinned={pinned}
+            onPinnedChange={setPinned}
+          />
           <div className="view-slot">
             {activeTab === "todos" ? (
               <TodoView
