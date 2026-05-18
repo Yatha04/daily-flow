@@ -1,0 +1,9 @@
+[[permission]]
+identifier = "allow-load-notes"
+description = "Allows the load_notes command."
+commands.allow = ["load_notes"]
+
+[[permission]]
+identifier = "allow-save-notes"
+description = "Allows the save_notes command."
+commands.allow = ["save_notes"]

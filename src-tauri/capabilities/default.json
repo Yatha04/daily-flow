@@ -13,6 +13,8 @@
     "allow-load-tasks",
     "allow-save-tasks",
     "allow-rollover-tasks",
+    "allow-load-notes",
+    "allow-save-notes",
     "core:window:allow-set-position",
     "core:window:allow-set-size",
     "core:window:allow-outer-position",

@@ -282,6 +282,38 @@ pub async fn rollover_tasks(app: AppHandle, today: String) -> Result<RolloverRes
     })
 }
 
+fn notes_path(app: &AppHandle) -> Result<PathBuf, String> {
+    let dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
+    Ok(dir.join("notes.md"))
+}
+
+#[tauri::command]
+pub async fn load_notes(app: AppHandle) -> Result<String, String> {
+    let path = notes_path(&app)?;
+    if !path.exists() {
+        return Ok(String::new());
+    }
+    match fs::read_to_string(&path) {
+        Ok(s) => Ok(s),
+        Err(e) => {
+            eprintln!("load_notes read error: {e}");
+            Ok(String::new())
+        }
+    }
+}
+
+#[tauri::command]
+pub async fn save_notes(app: AppHandle, content: String) -> Result<(), String> {
+    let path = notes_path(&app)?;
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+    let tmp = path.with_extension("md.tmp");
+    fs::write(&tmp, content.as_bytes()).map_err(|e| e.to_string())?;
+    fs::rename(&tmp, &path).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
 #[tauri::command]
 pub async fn save_settings(app: AppHandle, settings: Settings) -> Result<(), String> {
     // Validate activeTab strictly; drop anything unrecognized.
