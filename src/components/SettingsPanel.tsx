@@ -4,6 +4,8 @@ interface SettingsPanelProps {
   onOpacityChange: (v: number) => void;
   pinned: boolean;
   onPinnedChange: (v: boolean) => void;
+  autostart: boolean;
+  onAutostartChange: (v: boolean) => void;
 }
 
 export default function SettingsPanel({
@@ -12,6 +14,8 @@ export default function SettingsPanel({
   onOpacityChange,
   pinned,
   onPinnedChange,
+  autostart,
+  onAutostartChange,
 }: SettingsPanelProps) {
   if (!open) return null;
 
@@ -34,6 +38,13 @@ export default function SettingsPanel({
         onClick={() => onPinnedChange(!pinned)}
       >
         {pinned ? "📌 Pinned" : "📍 Pin to top"}
+      </button>
+      <button
+        className="settings-pin-btn"
+        type="button"
+        onClick={() => onAutostartChange(!autostart)}
+      >
+        {autostart ? "✓ Launch at login" : "Launch at login"}
       </button>
     </div>
   );
