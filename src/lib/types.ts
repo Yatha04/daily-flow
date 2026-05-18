@@ -10,6 +10,8 @@ export type TabId = "todos" | "notes";
 export interface Settings {
   activeTab?: TabId;
   lastSeenDate?: string;
+  pinned?: boolean;
+  opacity?: number;
 }
 
 export interface Task {

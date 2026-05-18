@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-set-pin-mode"
+description = "Allows the set_pin_mode command."
+commands.allow = ["set_pin_mode"]

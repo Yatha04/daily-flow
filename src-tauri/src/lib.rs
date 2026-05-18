@@ -23,17 +23,37 @@ pub fn run() {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![
-            storage::load_window_state,
-            storage::save_window_state,
-            storage::load_settings,
-            storage::save_settings,
-            storage::load_tasks,
-            storage::save_tasks,
-            storage::rollover_tasks,
-            storage::load_notes,
-            storage::save_notes,
-        ])
+        .invoke_handler({
+            #[cfg(windows)]
+            {
+                tauri::generate_handler![
+                    storage::load_window_state,
+                    storage::save_window_state,
+                    storage::load_settings,
+                    storage::save_settings,
+                    storage::load_tasks,
+                    storage::save_tasks,
+                    storage::rollover_tasks,
+                    storage::load_notes,
+                    storage::save_notes,
+                    window::set_pin_mode,
+                ]
+            }
+            #[cfg(not(windows))]
+            {
+                tauri::generate_handler![
+                    storage::load_window_state,
+                    storage::save_window_state,
+                    storage::load_settings,
+                    storage::save_settings,
+                    storage::load_tasks,
+                    storage::save_tasks,
+                    storage::rollover_tasks,
+                    storage::load_notes,
+                    storage::save_notes,
+                ]
+            }
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application")
 }

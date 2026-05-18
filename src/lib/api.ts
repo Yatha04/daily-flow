@@ -36,3 +36,7 @@ export async function loadNotes(): Promise<string> {
 export async function saveNotes(content: string): Promise<void> {
   await invoke("save_notes", { content });
 }
+
+export async function setPinMode(pinned: boolean): Promise<void> {
+  await invoke("set_pin_mode", { pinned });
+}
