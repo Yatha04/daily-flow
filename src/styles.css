@@ -5,20 +5,24 @@ html, body, #root {
   background: transparent;
   height: 100%;
   overflow: hidden;
-  font-family: system-ui, sans-serif;
+  font-family: "Segoe UI Variable", "Segoe UI", Inter, system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
   color: #fff;
 }
 
-/* ── Panel shell (Phase 1 — unchanged) ── */
+/* ── Panel shell ── */
 .panel {
   width: 100vw;
   height: 100vh;
   display: flex;
   flex-direction: column;
   background: rgba(20, 20, 24, var(--panel-opacity, 0.55));
-  backdrop-filter: blur(18px) saturate(1.1);
-  -webkit-backdrop-filter: blur(18px) saturate(1.1);
-  border-radius: 12px;
+  backdrop-filter: blur(20px) saturate(1.15);
+  -webkit-backdrop-filter: blur(20px) saturate(1.15);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
   overflow: hidden;
 }
 
@@ -40,8 +44,8 @@ html, body, #root {
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.15),
-    rgba(0, 0, 0, 0.35)
+    rgba(0, 0, 0, 0.12),
+    rgba(0, 0, 0, 0.32)
   );
   pointer-events: none;
   z-index: 0;
@@ -50,7 +54,7 @@ html, body, #root {
 .content-inner {
   position: relative;
   z-index: 1;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
@@ -70,17 +74,17 @@ html, body, #root {
 
 /* Thin scrollbar that blends with the widget */
 .task-list::-webkit-scrollbar {
-  width: 5px;
+  width: 4px;
 }
 .task-list::-webkit-scrollbar-track {
   background: transparent;
 }
 .task-list::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 4px;
 }
 .task-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 /* ── Task row ── */
@@ -89,18 +93,18 @@ html, body, #root {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 7px 6px;
-  border-radius: 6px;
-  transition: background 120ms ease, opacity 120ms ease;
+  padding: 8px 4px;
+  border-radius: 7px;
+  transition: background 140ms ease, opacity 140ms ease;
   user-select: none;
 }
 
 .task-row:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .task-dragging {
-  opacity: 0.4;
+  opacity: 0.35;
 }
 
 /* ── Drag handle (hover-only chrome) ── */
@@ -111,18 +115,18 @@ html, body, #root {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.55);
   font-size: 11px;
   line-height: 1;
   letter-spacing: -2px;
   cursor: grab;
   opacity: 0;
-  transition: opacity 120ms ease;
+  transition: opacity 140ms ease;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .task-row:hover .task-handle {
-  opacity: 0.7;
+  opacity: 0.65;
 }
 
 .task-handle:hover {
@@ -141,10 +145,10 @@ html, body, #root {
   left: 6px;
   right: 6px;
   height: 2px;
-  background: rgba(120, 180, 255, 0.9);
+  background: rgba(120, 180, 255, 0.85);
   border-radius: 1px;
   pointer-events: none;
-  box-shadow: 0 0 4px rgba(120, 180, 255, 0.6);
+  box-shadow: 0 0 6px rgba(120, 180, 255, 0.5);
 }
 
 .task-row.drop-above::before {
@@ -157,34 +161,34 @@ html, body, #root {
 
 /* ── Checkbox ── */
 .task-checkbox {
-  flex: 0 0 18px;
-  width: 18px;
-  height: 18px;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
   margin-top: 1px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid rgba(255, 255, 255, 0.30);
-  border-radius: 4px;
+  border: 1.5px solid rgba(255, 255, 255, 0.20);
+  border-radius: 5px;
   cursor: pointer;
-  transition: border-color 120ms ease, background 120ms ease;
+  transition: border-color 140ms ease, background 140ms ease;
   color: #fff;
 }
 
 .task-row:hover .task-checkbox {
-  border-color: rgba(255, 255, 255, 0.55);
+  border-color: rgba(255, 255, 255, 0.50);
 }
 
 .task-done .task-checkbox {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 /* ── Task text ── */
 .task-text {
   flex: 1 1 auto;
-  font-size: 13.5px;
-  line-height: 1.45;
+  font-size: 14px;
+  line-height: 1.5;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
   word-break: break-word;
   padding-top: 0.5px;
@@ -192,7 +196,7 @@ html, body, #root {
 
 .task-done .task-text {
   text-decoration: line-through;
-  opacity: 0.45;
+  opacity: 0.35;
 }
 
 /* ── Delete button (hover-only chrome) ── */
@@ -200,18 +204,18 @@ html, body, #root {
   flex: 0 0 auto;
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.80);
   font-size: 17px;
   line-height: 1;
   padding: 0 2px;
   margin-top: 0.5px;
   cursor: pointer;
   opacity: 0;
-  transition: opacity 120ms ease;
+  transition: opacity 140ms ease;
 }
 
 .task-row:hover .task-delete {
-  opacity: 0.7;
+  opacity: 0.65;
 }
 
 .task-row .task-delete:hover {
@@ -225,7 +229,7 @@ html, body, #root {
   align-items: center;
   gap: 10px;
   padding: 8px 6px 2px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
   margin-top: 4px;
 }
 
@@ -238,7 +242,7 @@ html, body, #root {
   justify-content: center;
   font-size: 16px;
   font-weight: 300;
-  opacity: 0.45;
+  opacity: 0.40;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
@@ -248,88 +252,92 @@ html, body, #root {
   border: none;
   outline: none;
   color: #fff;
-  font-size: 13.5px;
+  font-size: 14px;
   font-family: inherit;
   padding: 4px 0;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .add-task-input::placeholder {
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.30);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* ── Top bar (TabBar + Stopwatch) ── */
 .top-bar {
   flex: 0 0 auto;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 4px 0 8px;
+  padding: 4px 0 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  margin-bottom: 8px;
 }
 
+/* ── Tab bar — underline indicator style ── */
 .tab-bar {
   display: flex;
-  gap: 4px;
+  gap: 0;
 }
 
 .tab-bar button {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.55);
+  border-bottom: 2px solid transparent;
+  color: rgba(255, 255, 255, 0.45);
   font: inherit;
-  font-size: 13px;
-  padding: 4px 10px;
-  border-radius: 5px;
+  font-size: 14px;
+  padding: 4px 10px 6px;
   cursor: pointer;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-  transition: background 120ms ease, color 120ms ease;
+  transition: color 140ms ease, border-color 140ms ease;
+  letter-spacing: 0.01em;
 }
 
 .tab-bar button:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.80);
 }
 
 .tab-bar .tab-active {
-  background: rgba(255, 255, 255, 0.10);
   color: #fff;
+  font-weight: 500;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.85);
+  background: none;
 }
 
+/* ── Stopwatch — inline, no pill ── */
 .stopwatch {
   display: flex;
   align-items: center;
   gap: 4px;
   font-variant-numeric: tabular-nums;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.80);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-  padding: 2px 6px;
-  border-radius: 5px;
-  background: rgba(255, 255, 255, 0.05);
+  background: none;
+  padding: 2px 0;
 }
 
 .stopwatch-btn {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.50);
   font-size: 13px;
   padding: 2px 4px;
   border-radius: 3px;
   cursor: pointer;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-  transition: background 120ms ease, color 120ms ease;
+  transition: background 140ms ease, color 140ms ease;
   line-height: 1;
 }
 
 .stopwatch-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.90);
 }
 
 .stopwatch-btn:focus-visible {
-  outline: 1px solid rgba(255, 255, 255, 0.4);
+  outline: 1px solid rgba(255, 255, 255, 0.35);
   outline-offset: 1px;
 }
 
@@ -343,13 +351,54 @@ html, body, #root {
 }
 
 .todo-view,
-.notes-view {
+.notes-view,
+.thoughts-view {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   min-height: 0;
+  transition: opacity 150ms ease;
 }
 
+/* ── Thoughts (daily diary) ── */
+.thoughts-view {
+  gap: 2px;
+}
+
+.thoughts-date {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+  padding: 4px 0 8px;
+  user-select: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 4px;
+}
+
+.thoughts-textarea {
+  flex: 1 1 auto;
+  background: none;
+  border: none;
+  outline: none;
+  resize: none;
+  color: rgba(255, 255, 255, 0.92);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 15px;
+  line-height: 1.85;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  padding: 8px 0 4px;
+  caret-color: rgba(255, 255, 255, 0.75);
+}
+
+.thoughts-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.22);
+  font-style: italic;
+}
+
+/* legacy notes-textarea kept for compat */
 .notes-textarea {
   flex: 1 1 auto;
   background: none;
@@ -358,14 +407,15 @@ html, body, #root {
   resize: none;
   color: #fff;
   font: inherit;
-  font-size: 13.5px;
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.65;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-  padding: 4px 0;
+  padding: 6px 0 4px;
+  transition: opacity 150ms ease;
 }
 
 .notes-textarea::placeholder {
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.30);
 }
 
 /* ── Settings panel ── */
@@ -374,9 +424,10 @@ html, body, #root {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0 6px 8px;
-  font-size: 12px;
-  color: rgba(255,255,255,0.7);
+  padding: 8px 6px 8px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .settings-label {
@@ -387,39 +438,40 @@ html, body, #root {
 
 .settings-label input[type="range"] {
   width: 80px;
-  accent-color: rgba(255,255,255,0.7);
+  accent-color: rgba(255, 255, 255, 0.70);
 }
 
 .settings-pin-btn {
   background: none;
   border: none;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.65);
   font: inherit;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
   padding: 2px 6px;
   border-radius: 4px;
-  transition: background 120ms ease, color 120ms ease;
+  transition: background 140ms ease, color 140ms ease;
 }
 
 .settings-pin-btn:hover {
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.07);
   color: #fff;
 }
 
 .settings-gear-btn {
   background: none;
   border: none;
-  color: rgba(255,255,255,0.45);
+  color: rgba(255, 255, 255, 0.40);
   font-size: 13px;
   padding: 2px 4px;
   border-radius: 4px;
   cursor: pointer;
-  transition: background 120ms ease, color 120ms ease;
+  transition: background 140ms ease, color 140ms ease;
   line-height: 1;
+  justify-self: end;
 }
 
 .settings-gear-btn:hover {
-  background: rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.85);
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.85);
 }

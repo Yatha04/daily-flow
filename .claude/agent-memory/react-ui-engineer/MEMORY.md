@@ -1,0 +1,1 @@
+- [Phase 1 complete](project_phase1.md) — window shell frontend done, build clean; Rust deps: load_window_state, save_window_state
