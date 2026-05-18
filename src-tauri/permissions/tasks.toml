@@ -1,0 +1,14 @@
+[[permission]]
+identifier = "allow-load-tasks"
+description = "Allows the load_tasks command."
+commands.allow = ["load_tasks"]
+
+[[permission]]
+identifier = "allow-save-tasks"
+description = "Allows the save_tasks command."
+commands.allow = ["save_tasks"]
+
+[[permission]]
+identifier = "allow-rollover-tasks"
+description = "Allows the rollover_tasks command."
+commands.allow = ["rollover_tasks"]

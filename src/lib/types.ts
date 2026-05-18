@@ -19,3 +19,9 @@ export interface Task {
   createdAt: number;
   order: number;
 }
+
+export interface RolloverResult {
+  rolledOver: boolean;
+  sweptCount: number;
+  remaining: Task[];
+}

@@ -28,6 +28,9 @@ pub fn run() {
             storage::save_window_state,
             storage::load_settings,
             storage::save_settings,
+            storage::load_tasks,
+            storage::save_tasks,
+            storage::rollover_tasks,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application")

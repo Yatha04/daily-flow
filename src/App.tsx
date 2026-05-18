@@ -1,20 +1,40 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getCurrentWindow, availableMonitors, primaryMonitor } from "@tauri-apps/api/window";
 import { PhysicalPosition, PhysicalSize } from "@tauri-apps/api/dpi";
 import type { UnlistenFn } from "@tauri-apps/api/event";
-import { loadWindowState, saveWindowState, loadSettings, saveSettings } from "./lib/api";
-import type { TabId } from "./lib/types";
+import { nanoid } from "nanoid";
+import {
+  loadWindowState,
+  saveWindowState,
+  loadSettings,
+  saveSettings,
+  loadTasks,
+  saveTasks,
+  rolloverTasks,
+} from "./lib/api";
+import type { TabId, Task } from "./lib/types";
 import TabBar from "./components/TabBar";
 import Stopwatch from "./components/Stopwatch";
 import TodoView from "./components/TodoView";
 import NotesView from "./components/NotesView";
 import "./styles.css";
 
+function todayLocal(): string {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 function App() {
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const settingsDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tasksDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>("todos");
   const [settingsLoaded, setSettingsLoaded] = useState(false);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasksLoaded, setTasksLoaded] = useState(false);
 
   useEffect(() => {
     const win = getCurrentWindow();
@@ -144,6 +164,113 @@ function App() {
     };
   }, [activeTab, settingsLoaded]);
 
+  // Rollover + load tasks on mount and on window focus.
+  useEffect(() => {
+    const win = getCurrentWindow();
+    let cancelled = false;
+    let unlistenFocus: UnlistenFn | null = null;
+
+    async function refresh() {
+      try {
+        const result = await rolloverTasks(todayLocal());
+        if (cancelled) return;
+        setTasks(result.remaining);
+      } catch (e) {
+        console.error("rolloverTasks failed:", e);
+        try {
+          const t = await loadTasks();
+          if (cancelled) return;
+          setTasks(t);
+        } catch (e2) {
+          console.error("loadTasks fallback failed:", e2);
+        }
+      } finally {
+        if (!cancelled) setTasksLoaded(true);
+      }
+    }
+
+    refresh();
+
+    win
+      .onFocusChanged(({ payload: focused }) => {
+        if (focused) refresh();
+      })
+      .then((u) => {
+        if (cancelled) u();
+        else unlistenFocus = u;
+      })
+      .catch((e) => console.error("onFocusChanged failed:", e));
+
+    return () => {
+      cancelled = true;
+      if (unlistenFocus) unlistenFocus();
+    };
+  }, []);
+
+  // Debounced save of tasks after first load.
+  useEffect(() => {
+    if (!tasksLoaded) return;
+    if (tasksDebounce.current !== null) clearTimeout(tasksDebounce.current);
+    tasksDebounce.current = setTimeout(() => {
+      tasksDebounce.current = null;
+      saveTasks(tasks).catch((e) => console.error("saveTasks failed:", e));
+    }, 300);
+    return () => {
+      if (tasksDebounce.current !== null) {
+        clearTimeout(tasksDebounce.current);
+        tasksDebounce.current = null;
+      }
+    };
+  }, [tasks, tasksLoaded]);
+
+  const addTask = useCallback((text: string) => {
+    const trimmed = text.trim();
+    if (trimmed.length === 0) return;
+    setTasks((prev) => [
+      ...prev,
+      {
+        id: nanoid(),
+        text: trimmed,
+        done: false,
+        createdAt: Date.now(),
+        order: prev.length,
+      },
+    ]);
+  }, []);
+
+  const toggleTask = useCallback((id: string) => {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
+    );
+  }, []);
+
+  const deleteTask = useCallback((id: string) => {
+    setTasks((prev) =>
+      prev
+        .filter((t) => t.id !== id)
+        .map((t, i) => ({ ...t, order: i })),
+    );
+  }, []);
+
+  const reorderTask = useCallback((fromIndex: number, toIndex: number) => {
+    setTasks((prev) => {
+      if (
+        fromIndex === toIndex ||
+        fromIndex < 0 ||
+        fromIndex >= prev.length ||
+        toIndex < 0 ||
+        toIndex > prev.length
+      ) {
+        return prev;
+      }
+      const next = prev.slice();
+      const [moved] = next.splice(fromIndex, 1);
+      const insertAt = toIndex > fromIndex ? toIndex - 1 : toIndex;
+      next.splice(insertAt, 0, moved);
+      return next.map((t, i) => ({ ...t, order: i }));
+    });
+  }, []);
+
   return (
     <div className="panel">
       <div className="drag-strip" data-tauri-drag-region />
@@ -155,7 +282,17 @@ function App() {
             <Stopwatch />
           </div>
           <div className="view-slot">
-            {activeTab === "todos" ? <TodoView /> : <NotesView />}
+            {activeTab === "todos" ? (
+              <TodoView
+                tasks={tasks}
+                onAdd={addTask}
+                onToggle={toggleTask}
+                onDelete={deleteTask}
+                onReorder={reorderTask}
+              />
+            ) : (
+              <NotesView />
+            )}
           </div>
         </div>
       </div>
