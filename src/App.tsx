@@ -12,6 +12,9 @@ import {
   saveTasks,
   rolloverTasks,
   setPinMode,
+  getAutostart,
+  enableAutostart,
+  disableAutostart,
 } from "./lib/api";
 import type { TabId, Task } from "./lib/types";
 import TabBar from "./components/TabBar";
@@ -38,6 +41,7 @@ function App() {
   const [opacity, setOpacity] = useState<number>(0.55);
   const [pinned, setPinned] = useState<boolean>(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [autostart, setAutostart] = useState<boolean>(false);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [tasksLoaded, setTasksLoaded] = useState(false);
 
@@ -147,6 +151,9 @@ function App() {
         setPinMode(restoredPinned).catch((e) =>
           console.error("setPinMode (restore) failed:", e),
         );
+        getAutostart()
+          .then((v) => { if (!cancelled) setAutostart(v); })
+          .catch((e) => console.error("getAutostart failed:", e));
       })
       .catch((e) => console.error("loadSettings failed:", e))
       .finally(() => {
@@ -180,6 +187,16 @@ function App() {
     if (!settingsLoaded) return;
     setPinMode(pinned).catch((e) => console.error("setPinMode failed:", e));
   }, [pinned, settingsLoaded]);
+
+  // Sync autostart to Rust whenever it changes after load.
+  useEffect(() => {
+    if (!settingsLoaded) return;
+    if (autostart) {
+      enableAutostart().catch((e) => console.error("enableAutostart failed:", e));
+    } else {
+      disableAutostart().catch((e) => console.error("disableAutostart failed:", e));
+    }
+  }, [autostart, settingsLoaded]);
 
   // Rollover + load tasks on mount and on window focus.
   useEffect(() => {
@@ -315,6 +332,8 @@ function App() {
             onOpacityChange={setOpacity}
             pinned={pinned}
             onPinnedChange={setPinned}
+            autostart={autostart}
+            onAutostartChange={setAutostart}
           />
           <div className="view-slot">
             {activeTab === "todos" ? (

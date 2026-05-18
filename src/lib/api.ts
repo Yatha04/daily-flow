@@ -40,3 +40,15 @@ export async function saveNotes(content: string): Promise<void> {
 export async function setPinMode(pinned: boolean): Promise<void> {
   await invoke("set_pin_mode", { pinned });
 }
+
+export async function getAutostart(): Promise<boolean> {
+  return await invoke<boolean>("plugin:autostart|is_enabled");
+}
+
+export async function enableAutostart(): Promise<void> {
+  await invoke("plugin:autostart|enable");
+}
+
+export async function disableAutostart(): Promise<void> {
+  await invoke("plugin:autostart|disable");
+}
