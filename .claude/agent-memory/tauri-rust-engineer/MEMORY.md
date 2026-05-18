@@ -1,0 +1,1 @@
+- [Phase 1 project state](project-phase1.md) — window shell + storage done, cargo check clean; key: permissions need src-tauri/permissions/ TOML, Manager trait must be in scope

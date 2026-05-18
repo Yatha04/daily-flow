@@ -1,7 +1,20 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(grep -A1 \"^name = \\\\\"tauri\\\\\"$\\\\|^name = \\\\\"windows\\\\\"$\\\\|^name = \\\\\"tauri-build\\\\\"$\" src-tauri/Cargo.lock)",
+      "Bash(Remove-Item -Force \"C:/Users/yatha/Desktop/ClaudeProjects/notebook/src/App.css\" -ErrorAction SilentlyContinue)",
+      "Bash(Remove-Item -Force \"C:/Users/yatha/Desktop/ClaudeProjects/notebook/src/assets/react.svg\" -ErrorAction SilentlyContinue)",
+      "Bash(Write-Host \"done\")",
+      "Bash(npm run *)",
+      "PowerShell(New-Item *)",
+      "Bash(cargo check *)",
+      "Bash(git push *)",
+      "Bash(npx tsc *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git tag *)",
+      "Bash(Remove-Item \"src\\\\components\\\\NotesView.tsx\")"
     ]
   }
 }

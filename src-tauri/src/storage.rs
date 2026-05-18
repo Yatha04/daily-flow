@@ -290,7 +290,7 @@ pub async fn rollover_tasks(app: AppHandle, today: String) -> Result<RolloverRes
 
 fn notes_path(app: &AppHandle) -> Result<PathBuf, String> {
     let dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
-    Ok(dir.join("notes.md"))
+    Ok(dir.join("thoughts.md"))
 }
 
 #[tauri::command]

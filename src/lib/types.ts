@@ -5,7 +5,7 @@ export interface WindowState {
   height: number;
 }
 
-export type TabId = "todos" | "notes";
+export type TabId = "todos" | "thoughts";
 
 export interface Settings {
   activeTab?: TabId;

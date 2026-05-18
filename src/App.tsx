@@ -21,7 +21,7 @@ import TabBar from "./components/TabBar";
 import Stopwatch from "./components/Stopwatch";
 import SettingsPanel from "./components/SettingsPanel";
 import TodoView from "./components/TodoView";
-import NotesView from "./components/NotesView";
+import ThoughtsView from "./components/ThoughtsView";
 import "./styles.css";
 
 function todayLocal(): string {
@@ -142,7 +142,7 @@ function App() {
     loadSettings()
       .then((s) => {
         if (cancelled) return;
-        if (s?.activeTab === "todos" || s?.activeTab === "notes") {
+        if (s?.activeTab === "todos" || s?.activeTab === "thoughts") {
           setActiveTab(s.activeTab);
         }
         if (typeof s?.opacity === "number") setOpacity(s.opacity);
@@ -315,8 +315,8 @@ function App() {
         <div className="scrim" />
         <div className="content-inner">
           <div className="top-bar">
-            <TabBar active={activeTab} onChange={setActiveTab} />
             <Stopwatch />
+            <TabBar active={activeTab} onChange={setActiveTab} />
             <button
               type="button"
               className="settings-gear-btn"
@@ -345,7 +345,7 @@ function App() {
                 onReorder={reorderTask}
               />
             ) : (
-              <NotesView />
+              <ThoughtsView />
             )}
           </div>
         </div>

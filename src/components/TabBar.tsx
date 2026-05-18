@@ -7,7 +7,7 @@ interface TabBarProps {
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "todos", label: "To-dos" },
-  { id: "notes", label: "Notes" },
+  { id: "thoughts", label: "Thoughts" },
 ];
 
 export default function TabBar({ active, onChange }: TabBarProps) {

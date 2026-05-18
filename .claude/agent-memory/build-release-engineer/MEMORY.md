@@ -1,0 +1,1 @@
+- [Project packaging](project_packaging.md) — First production build 2026-05-18; NSIS 2 MB, MSI 3.12 MB; unsigned; identifier com.yatha.notebook must stay stable
