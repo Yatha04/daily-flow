@@ -298,6 +298,9 @@ html, body, #root {
 }
 
 .stopwatch {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-variant-numeric: tabular-nums;
   font-size: 13px;
   color: rgba(255, 255, 255, 0.85);
@@ -305,6 +308,29 @@ html, body, #root {
   padding: 2px 6px;
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.05);
+}
+
+.stopwatch-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  cursor: pointer;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  transition: background 120ms ease, color 120ms ease;
+  line-height: 1;
+}
+
+.stopwatch-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.stopwatch-btn:focus-visible {
+  outline: 1px solid rgba(255, 255, 255, 0.4);
+  outline-offset: 1px;
 }
 
 /* ── View slot ── */
