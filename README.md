@@ -1,7 +1,21 @@
-# Tauri + React + Typescript
+# Daily Flow
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+A lightweight desktop widget for Windows that stays on your desktop, out of the way but always within reach.
 
-## Recommended IDE Setup
+## What it does
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+- **To-dos** — add tasks, check them off, drag to reorder. Completed tasks are swept away each morning; unfinished ones carry forward automatically.
+- **Thoughts** — a daily diary. Each day opens a fresh entry with the date pre-filled. Past entries are preserved below.
+- **Stopwatch** — always visible in the corner. Start, pause, resume, reset.
+
+## Other features
+
+- Translucent, blurred background — sits on the desktop without covering your work
+- Adjustable opacity and pin-to-top toggle in settings
+- System tray icon — right-click to show/hide or quit
+- **Ctrl+Shift+Space** — global hotkey to toggle the widget from anywhere
+- Launch at login toggle
+
+## Stack
+
+Tauri 2 · React · TypeScript · Rust
