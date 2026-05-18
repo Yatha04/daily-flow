@@ -28,3 +28,11 @@ export async function saveTasks(tasks: Task[]): Promise<void> {
 export async function rolloverTasks(today: string): Promise<RolloverResult> {
   return await invoke<RolloverResult>("rollover_tasks", { today });
 }
+
+export async function loadNotes(): Promise<string> {
+  return await invoke<string>("load_notes");
+}
+
+export async function saveNotes(content: string): Promise<void> {
+  await invoke("save_notes", { content });
+}

@@ -31,6 +31,8 @@ pub fn run() {
             storage::load_tasks,
             storage::save_tasks,
             storage::rollover_tasks,
+            storage::load_notes,
+            storage::save_notes,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application")
